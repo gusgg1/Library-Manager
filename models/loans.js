@@ -1,12 +1,46 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Loans = sequelize.define('Loans', {
-    // id: DataTypes.INTEGER,
-    book_id: DataTypes.INTEGER,
-    patron_id: DataTypes.INTEGER,
-    loaned_on: DataTypes.DATE,
-    return_by: DataTypes.DATE,
-    returned_on: DataTypes.DATE
+    book_id: {
+      type: DataTypes.INTEGER,
+      validate: {
+        notEmpty: {
+          msg: 'Book ID is required'
+        }
+      }
+    },
+    patron_id: {
+      type: DataTypes.INTEGER,
+      validate: {
+        notEmpty: {
+          msg: 'Patron ID is required'
+        }
+      }
+    },
+    loaned_on: {
+      type: DataTypes.DATE,
+      validate: {
+        notEmpty: {
+          msg: 'Loaned date is required (YYYY-MM-DD)'
+        }
+      }
+    },
+    return_by: {
+      type: DataTypes.DATE,
+      validate: {
+        notEmpty: {
+          msg: 'Return date is required (YYYY-MM-DD)'
+        }
+      }
+    },
+    returned_on: {
+      type: DataTypes.DATE,
+      validate: {
+        notEmpty: {
+          msg: 'Returned date is required'
+        }
+      }
+    }
   }, {
     timestamps: false
   });
