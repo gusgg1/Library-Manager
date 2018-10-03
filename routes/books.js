@@ -3,7 +3,7 @@ const router  = express.Router();
 const { Books, Loans, Patrons } = require('../models');
 
 
-/* GET books form to create book. */
+/* GET form to create book. */
 router.get('/new', function(req, res, next) {
   res.render('books/new', { book: Books.build(), title: 'New Book' });  
 });
@@ -39,6 +39,26 @@ router.get('/:id', function(req, res, next) {
   Books.findById(req.params.id).then(function(book) {
     res.render('books/show', {title: book.title, book});
   });
+});
+
+/* PUT update book */
+router.put('/:id', function(req, res, next) {
+  Books.findById(req.params.id).then(function(book) {
+    return book.update(req.body);
+  }).then(function(book) {
+    res.redirect('/books');
+  }).catch(function(err) {
+    if (err.name === 'SequelizeValidationError') {
+      const book = Books.build(req.body);
+      book.id = req.params.id;
+
+      res.render('books/show', {title: book.title, book, errors: err.errors});
+    } else {
+      throw err;
+    }
+  }).catch(function(err) {
+    res.send(500);
+  })
 });
 
 module.exports = router;
