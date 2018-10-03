@@ -1,6 +1,15 @@
-extends layout
+if(errors)
+	h2.errors An error has been found!
+	ul.errors
+		each error in errors
+			li
+				=error.message
 
-block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+
+
+//- extends layout
+
+//- block content
+//-   h1= message
+//-   h2= error.status
+//-   pre #{error.stack}

@@ -1,29 +1,30 @@
 extends ../layout 
 
 block content
+  include ../error
 
-  h1 Books
-  p
-    a.button(href='/books/new') Create New Book
-  p
-    | Filters 
-    a(href='/books') All
-    |  |
-    a(href='/books?filter=overdue') Overdue
-    |  |
-    a(href='/books?filter=checked_out') Checked Out
+  h1= title
+  form(action='/books/' + book.id + '?_method=PUT', method='post')
+    include form
+    input(type='submit', value='Update')
+  h2 Loan History
   table
     thead
       tr
-        th Title
-        th Author
-        th Genre
-        th Year Released
+        th Book
+        th Patron 
+        th Loaned on
+        th Return by 
+        th Returned on
+        th Action
     tbody
-      each book in books
-        tr
-          td
-            a(href='/books/' + book.id)= book.title
-          td= book.author
-          td= book.genre
-          td= book.first_published
+      tr
+        td
+          a(href='/books/' + book.id)= title
+        td
+          a(href='patron_detail.html') ?????
+        td 2015-12-12
+        td 2015-12-19
+        td
+        td
+          a.button(href='return_book.html') Return Book
