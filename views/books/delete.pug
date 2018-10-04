@@ -1,0 +1,16 @@
+extends ../layout
+
+block content 
+  h1= book.title
+  p 
+    | Are you 
+    strong sure 
+    | you want to delete 
+    em= book.title
+    | ?
+  form(action="/books/" + book.id + "?_method=DELETE", method="post")
+    a.btn.btn-warning(href="/books/" + book.id) Cancel
+    |
+    button.btn.btn-danger.ml-2 Delete
+    
+

@@ -7,6 +7,8 @@ block content
   form(action='/books/' + book.id + '?_method=PUT', method='post')
     include form
     input(type='submit', value='Update')
+  p  
+    a.btn.btn-danger(href=`/books/${book.id}/delete`) Delete Book
   h2 Loan History
   table
     thead
@@ -28,3 +30,4 @@ block content
         td
         td
           a.button(href='return_book.html') Return Book
+        

@@ -1,10 +1,10 @@
 extends layout
 
 block content
-  h1 Library Manager
+  h1.font-weight-bold Library Manager
   p Welcome to Library Manager
   ul
-    li
+    li.mb-2
       | Books
       ul
         li
@@ -15,7 +15,7 @@ block content
           a(href='/books?filter=overdue') List Overdue
         li
           a(href='/books?filter=checked_out') List Checked Out
-    li
+    li.mb-2
       | Patrons
       ul
         li

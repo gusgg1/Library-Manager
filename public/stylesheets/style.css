@@ -9,6 +9,7 @@ a {
 }
   a:hover {
     color: black;
+    text-decoration: none;
   }
 a.button, input[type=submit] {
   color: white;
