@@ -56,5 +56,41 @@ router.post('/', (req, res, next) => {
   });
 });
 
+// GET loan return form
+router.get('/:id/return', async (req, res, next) => {
+  const loan = await Loans.findById(req.params.id);
+  const [book, patron] = await Promise.all([Books.findById(req.params.id), Patrons.findById(loan.patron_id)]);
+  if (loan) {
+    res.render('loans/return', {loan, patron, book, dateFormat});
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+// PUT return a loan / book
+router.put('/:id', async (req, res, next) => {
+  const loan = await Loans.findById(req.params.id);
+  if (loan) {
+    try {
+      await loan.update(req.body);
+    } catch(err) {
+      if (err.name === 'SequelizeValidationError') {
+        return res.render('loans/return', {
+          loan,
+          book: await Books.findById(loan.book_id),
+          patron: await Patrons.findById(loan.patron_id),
+          errors: err.errors,
+          dateFormat
+        });
+      } else {
+        return res.sendStatus(500);
+      }
+    }
+    res.redirect('/loans');
+  } else {
+    return res.sendStatus(404);
+  }
+});
+
 
 module.exports = router;

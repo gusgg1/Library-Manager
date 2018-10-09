@@ -1,14 +1,25 @@
 const express = require('express');
 const router  = express.Router();
-const { Books, Loans, Patrons } = require('../models');
+const dateFormat = require('dateformat');
+const { Sequelize, Books, Loans, Patrons } = require('../models');
 
 
 /* GET all books */
 router.get('/', function(req, res, next) {
-  Books.findAll().then(function(books) {
-    res.render('books/index', {books});
-  });
+  if (req.query.filter === 'overdue') {
+    Books.findAll().then(function(books) {
+      console.log(req.query);
+      res.render('books/index', {books});
+    });
+  }
 });
+
+// GET overdue books
+// router.get('/', (req, res, next) => {
+//   if (req.query.filter === 'overdue') {
+//     res.send('YES');
+//   }
+// });
 
 /* GET form to create book. */
 router.get('/new', function(req, res, next) {
@@ -35,10 +46,18 @@ router.post('/', function(req, res, next) {
 });
 
 /* GET specific book */
-router.get('/:id', (req, res, next) => {
-  Books.findById(req.params.id).then(book => {
-    res.render('books/show', {title: book.title, book});
-  });
+router.get('/:id', async (req, res, next) => {
+  const [book, loans] = await Promise.all([
+    Books.findById(req.params.id),
+    Loans.findAll({
+      where: { book_id: req.params.id },
+      include: [{ model: Patrons }]
+    })
+  ]);
+  if (!book) {
+    return res.sendStatus(404);
+  }
+  return res.render('books/show', {title: book.tile, book, loans, dateFormat});
 });
 
 /* PUT update book */

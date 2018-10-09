@@ -10,6 +10,13 @@ router.get('/', (req, res, next) => {
   });
 });
 
+// GET specific patron
+router.get('/:id', (req, res, next) => {
+  Patrons.findById(req.params.id).then(patron => {
+    res.render('patrons/show');
+  });
+});
+
 // GET patron form
 router.get('/new', function(req, res, next) {
   res.render('patrons/new', {patron: Patrons.build(), title: 'New Patron'});

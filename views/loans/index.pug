@@ -27,8 +27,12 @@ block content
             a(href='/books/' + loan.book_id)= loan.Book.title
           td
             a(href='patron_detail.html')= loan.Patron.first_name + ' ' + loan.Patron.last_name
-          td=dateFormat(loan.loaned_on, "yyyy-mm-dd")
-          td=dateFormat(loan.return_by, 'yyyy-mm-dd')
+          td= dateFormat(loan.loaned_on, "yyyy-mm-dd")
+          td= dateFormat(loan.return_by, 'yyyy-mm-dd')
+          if loan.returned_on
+            td= dateFormat(loan.returned_on, 'yyyy-mm-dd')
+          else
+            td
           td
-          td
-            a.button(href='return_book.html') Return Book
+            if !loan.returned_on
+              a.button(href=`/loans/${loan.id}/return`) Return Book
