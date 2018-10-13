@@ -32,9 +32,12 @@ block content
           td= book.genre
           td= book.first_published
   p= "Total Books: " + totalBooks
-  p.text-center= "Pages: "
+  nav.mb-3(aria-label='Page navigation example')
+  ul.pagination.justify-content-center
     - var n = 1;
       while n <= pages
-        a(href="/books/?page=" + n)= n++ + "  "
+        li.page-item
+          a.page-link(href="/books/?page=" + n)= n++ + "  "
+  
             
               

@@ -6,9 +6,55 @@ const { Sequelize, Books, Loans, Patrons } = require('../models');
 
 // GET all patrons
 router.get('/', (req, res, next) => {
-  Patrons.findAll().then(patrons => {
-    res.render('patrons/index', {patrons});
-  });
+  let options = {
+    order: [['last_name', 'asc']],
+    limit: 10,
+    offset: 0,
+    where: {}
+  };
+
+  if (req.query.page) {
+    options.limit = 10;
+    options.offset = (req.query.page - 1) * options.limit;
+  }
+
+  if (req.query.q) {
+    options.where = {
+      [Sequelize.Op.or]: [
+        {
+          first_name: {
+            [Sequelize.Op.like]: `%${req.query.q.toLowerCase()}%`
+          }
+        },
+        {
+          last_name: {
+            [Sequelize.Op.like]: `%${req.query.q.toLowerCase()}%`
+          }
+        },
+        {
+          library_id: {
+            [Sequelize.Op.like]: `%${req.query.q.toLowerCase()}%`
+          }
+        }
+      ]
+    };
+  }
+
+  Patrons.findAndCountAll(options)
+    .then(patrons => {
+      let totalPatrons = patrons.count;
+      let pageSize = 10;
+      let pages = Math.ceil(totalPatrons / pageSize);
+      res.render('patrons/index', {
+        patrons: patrons.rows,
+        totalPatrons,
+        pageSize,
+        pages
+      });
+    })
+    .catch(err => {
+      res.sendStatus(500);
+    });
 });
 
 // GET patron form create
