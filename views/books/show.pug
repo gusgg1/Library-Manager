@@ -25,7 +25,7 @@ block content
           td
             a(href='/books/' + book.id)= book.title
           td
-            a(href='patron_detail.html')= `${loan.Patron.first_name} ${loan.Patron.last_name}`
+            a(href=`/patrons/${loan.Patron.id}`)= `${loan.Patron.first_name} ${loan.Patron.last_name}`
           td= dateFormat(loan.loaned_on, 'yyyy-mm-dd')
           td= dateFormat(loan.return_by, 'yyyy-mm-dd')
           if loan.returned_on

@@ -6,20 +6,70 @@ const { Sequelize, Books, Loans, Patrons } = require('../models');
 
 /* GET all books */
 router.get('/', function(req, res, next) {
+  let options = {
+    order: [['title', 'asc']],
+    limit: 10,
+    offset: 0,
+    where: {}
+  };
   if (req.query.filter === 'overdue') {
-    Books.findAll().then(function(books) {
-      console.log(req.query);
-      res.render('books/index', {books});
-    });
+    options.include = [{
+      model: Loans,
+      where: {
+        return_by: {
+          [Sequelize.Op.lt]: new Date()
+        },
+        returned_on: null
+      }
+    }];
+  } else if (req.query.filter === 'checked_out') {
+    options.include = [{
+      model: Loans,
+      where: {
+        loaned_on: {
+          [Sequelize.Op.ne]: null
+        },
+        returned_on: {
+          [Sequelize.Op.eq]: null
+        }
+      }
+    }];
+  } else if (req.query.page) {
+    (options.limit = 10), (options.offset = (req.query.page - 1) * options.limit);
   }
-});
+  if (req.query.q) {
+    options.where = {
+      [Sequelize.Op.or]: [
+        {
+          title: {
+            [Sequelize.Op.like]: `%${req.query.q.toLowerCase()}%`
+          }
+        },
+        {
+          author: {
+            [Sequelize.Op.like]: `%${req.query.q.toLowerCase()}%`
+          }
+        },
+        {
+          genre: {
+            [Sequelize.Op.like]: `%${req.query.q.toLowerCase()}%`
+          }
+        }
+      ]
+    };
+  }
 
-// GET overdue books
-// router.get('/', (req, res, next) => {
-//   if (req.query.filter === 'overdue') {
-//     res.send('YES');
-//   }
-// });
+  Books.findAndCountAll(options)
+    .then(books => {
+      let totalBooks = books.count;
+      let pageSize = 10;
+      let pages = Math.ceil(totalBooks / pageSize);
+      res.render('books/index', { books: books.rows, totalBooks, pageSize, pages });
+    })
+    .catch(err => {
+      res.sendStatus(500);
+    }); 
+}); 
 
 /* GET form to create book. */
 router.get('/new', function(req, res, next) {

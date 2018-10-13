@@ -1,28 +1,14 @@
 extends ../layout 
 
 block content 
-  h1 Patron: Andrew Chalkley
-  form
-    p
-      label(for='first_name') First Name
-      input#first_name(type='text', value='Andrew')
-    p
-      label(for='last_name') Last Name
-      input#last_name(type='text', value='Chalkley')
-    p
-      label(for='address')  Address
-      input#address(type='text', value='1234 NE 20st St')
-    p
-      label(for='email') Email
-      input#email(type='text', value='andrew.chalkley@teamtreehouse.com')
-    p
-      label(for='library_id') Library ID
-      input#library_id(type='text', value='MCL1001')
-    p
-      label(for='zip_code') Zip Code
-      input#zip_code(type='text', value='90210')
-    p
-      input(type='submit', value='Update')
+  include ../error
+
+  h1= patron.first_name + ' ' + patron.last_name
+  form(action="/patrons/" + patron.id + "?_method=PUT", method="post")
+    include form
+    input.mb-3(type='submit', value='Update')
+  p  
+    a.btn.btn-danger(href=`/patrons/${patron.id}/delete`) Delete Patron
   h2 Loan History
   table
     thead
@@ -34,23 +20,18 @@ block content
         th Returned on
         th Action
     tbody
-      tr
-        td
-          a(href='book_detail.html') Harry Potter and the Goblet of Fire
-        td
-          a(href='patron_detail.html') Andrew Chalkley
-        td 2015-12-11
-        td 2015-12-18
-        td
-        td
-          a.button(href='return_book.html') Return Book
-      tr
-        td
-          a(href='book_detail.html') A Brief History of Time
-        td
-          a(href='patron_detail.html') Andrew Chalkley
-        td 2015-12-12
-        td 2015-12-19
-        td
-        td
-          a.button(href='return_book.html') Return Book
+      each loan in loans
+        tr
+          td
+            a(href='/books/' + loan.Book.id)= loan.Book.title
+          td
+            a(href='/patrons/' + patron.id)= patron.first_name + ' ' + patron.last_name
+          td= dateFormat(loan.loaned_on, 'yyyy-mm-dd')
+          td= dateFormat(loan.return_by, 'yyyy-mm-dd')
+          if loan.returned_on
+            td= dateFormat(loan.returned_on, 'yyyy-mm-dd')
+          else
+            td
+          td
+            if !loan.returned_on
+              a.button(href='/loans/' + loan.id + '/return') Return Book

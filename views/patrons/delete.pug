@@ -1,0 +1,14 @@
+extends ../layout
+
+block content 
+  h1= title
+  p 
+    | Are you 
+    strong sure 
+    | you want to delete 
+    em= patron.first_name + ' ' + patron.last_name
+    | ?
+  form(action="/patrons/" + patron.id + "?_method=DELETE", method="post")
+    a.btn.btn-warning(href="/patrons/" + patron.id) Cancel
+    |
+    button.btn.btn-danger.ml-2 Delete
