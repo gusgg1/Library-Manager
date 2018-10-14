@@ -1,17 +1,50 @@
-const express = require('express');
-const router  = express.Router();
+const express    = require('express');
+const router     = express.Router();
 const dateFormat = require('dateformat');
-const { Books, Loans, Patrons } = require('../models');
+const { Sequelize, Books, Loans, Patrons } = require('../models');
 
 
 // GET all loans
 router.get('/', (req, res, next) => {
-  Loans.findAll({
-    include: [{model: Patrons}, {model: Books}],
-    order: [["id", "DESC"]]
-  }).then(loans => {
-    res.render('loans/index', {loans, dateFormat});
-  });
+  let options = {
+    order: [['return_by', 'desc']],
+    include: [{ model: Books }, { model: Patrons }],
+    limit: 10,
+    offset: 0,
+    where: {}
+  };
+
+  if (req.query.filter === 'overdue') {
+    options.where = {
+      return_by: {
+        [Sequelize.Op.lt]: new Date()
+      },
+      returned_on: null
+    };
+  } else if (req.query.filter === 'checked_out') {
+    options.where = {
+      loaned_on: {
+        [Sequelize.Op.ne]: null
+      },
+      returned_on: {
+        [Sequelize.Op.eq]: null
+      }
+    };
+  } else if (req.query.page) {
+    options.limit = 10;
+    options.offset = (req.query.page - 1) * options.limit;
+  }
+
+  Loans.findAndCountAll(options)
+    .then(loans => {
+      let totalLoans = loans.count;
+      let pageSize = 10;
+      let pages = Math.ceil(totalLoans / pageSize);
+      res.render('loans/index', { loans: loans.rows, totalLoans, pageSize, pages, dateFormat });
+    })
+    .catch(err => {
+      res.sendStatus(500);
+    });
 });
 
 // GET form to create loan

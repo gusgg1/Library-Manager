@@ -36,3 +36,10 @@ block content
           td
             if !loan.returned_on
               a.button(href=`/loans/${loan.id}/return`) Return Book
+  p= "Total Books: " + totalLoans
+  nav.mb-3(aria-label='Page navigation example')
+  ul.pagination.justify-content-center
+    - var n = 1;
+      while n <= pages
+        li.page-item
+          a.page-link(href="/loans/?page=" + n)= n++ + "  "
