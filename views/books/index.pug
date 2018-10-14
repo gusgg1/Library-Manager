@@ -37,7 +37,10 @@ block content
     - var n = 1;
       while n <= pages
         li.page-item
-          a.page-link(href="/books/?page=" + n)= n++ + "  "
+          - if(current == n)
+            a.page-link.active(href="/books/?page=" + n)= n++
+          - else 
+            a.page-link(href="/books/?page=" + n)= n++
   
             
               

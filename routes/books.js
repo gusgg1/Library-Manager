@@ -62,9 +62,16 @@ router.get('/', function(req, res, next) {
   Books.findAndCountAll(options)
     .then(books => {
       let totalBooks = books.count;
-      let pageSize = 10;
-      let pages = Math.ceil(totalBooks / pageSize);
-      res.render('books/index', { books: books.rows, totalBooks, pageSize, pages });
+      let perPage = 10;
+      let pages = Math.ceil(totalBooks / perPage);
+      let current = req.query.page ? req.query.page : 1;
+      res.render('books/index', { 
+        books: books.rows, 
+        totalBooks, 
+        perPage, 
+        pages,
+        current 
+      });
     })
     .catch(err => {
       res.sendStatus(500);

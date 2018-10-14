@@ -43,13 +43,15 @@ router.get('/', (req, res, next) => {
   Patrons.findAndCountAll(options)
     .then(patrons => {
       let totalPatrons = patrons.count;
-      let pageSize = 10;
-      let pages = Math.ceil(totalPatrons / pageSize);
+      let perPage = 10;
+      let pages = Math.ceil(totalPatrons / perPage);
+      let current = req.query.page ? req.query.page : 1; 
       res.render('patrons/index', {
         patrons: patrons.rows,
         totalPatrons,
-        pageSize,
-        pages
+        perPage,
+        pages,
+        current
       });
     })
     .catch(err => {
