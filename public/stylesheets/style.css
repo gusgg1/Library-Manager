@@ -97,3 +97,12 @@ input[type=text], select {
 .errors {
   color: red;
 }
+
+.page-link {
+  color: #019875; 
+}
+
+.active {
+  background-color: #019875;
+  color: white;
+}

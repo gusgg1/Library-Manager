@@ -38,9 +38,10 @@ router.get('/', (req, res, next) => {
   Loans.findAndCountAll(options)
     .then(loans => {
       let totalLoans = loans.count;
-      let pageSize = 10;
-      let pages = Math.ceil(totalLoans / pageSize);
-      res.render('loans/index', { loans: loans.rows, totalLoans, pageSize, pages, dateFormat });
+      let perPage = 10;
+      let pages = Math.ceil(totalLoans / perPage);
+      let current = req.query.page ? req.query.page : 1; 
+      res.render('loans/index', { loans: loans.rows, totalLoans, perPage, pages, dateFormat, current });
     })
     .catch(err => {
       res.sendStatus(500);
